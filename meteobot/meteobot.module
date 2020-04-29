@@ -1,0 +1,26 @@
+<?php
+/**
+ * @file
+ * A block module that displays weather data form Meteobot API.
+ */
+
+ /**
+ * Implements hook_help().
+ *
+ * Displays help and module information.
+ *
+ * @param path
+ *   Which path of the site we're using to display help
+ * @param arg
+ *   Array that holds the current path as returned from arg() function
+ */
+function meteobot_help($path, $arg) {
+  switch ($path) {
+    case "admin/help#meteobot":
+      $output = '';
+      $output .= '<h2>' . t('About') . '</h2>';
+      $output .= '<p>' . t('Displays weather data from Meteobot API');
+      return $output;
+      break;
+  }
+}
