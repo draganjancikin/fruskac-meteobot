@@ -1,0 +1,135 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the meteobot module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+
+function meteobot_schema() {
+  $schema['meteobot'] = array(
+    'description' => 'Stores weather data.',
+    'fields' => array(
+      'wid' => array(
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique record ID.',
+      ),
+      'sid' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Unique identifier of weather station.',
+      ),
+      'created' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Local date and time of the weather station. The time that the weather record was created, as a Unix timestamp.',
+      ),
+      'air_temperature' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Air temperature in Celsius degrees.',
+      ),
+      'air_pressure' => array(
+        'type' => 'float(4,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Atmospheric pressure in hPa.',
+      ),
+      'air_humidity' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Air humidity in percentage.',
+      ),
+      'dew_point' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Temperature, in Celsius degrees, below which water droplets begin to condense and dew can form.',
+      ),
+      'earth_humidity_1' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Soil moisture at port 1, depth set by user.',
+      ),
+      'earth_humidity_2' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Soil moisture at port 2, depth set by user.',
+      ),
+      'earth_humidity_3' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Soil moisture at port 3, depth set by user.',
+      ),
+      'earth_temperature_1' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Soil temperature at port 1, depth set by user.',
+      ),
+      'earth_temperature_2' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Soil temperature at port 2, depth set by user.',
+      ),
+      'earth_temperature_3' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Soil temperature at port 3, depth set by user.',
+      ),
+      'leaf_wetness_1' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Leaf wetness percent in a shaded part of the crop.',
+      ),
+      'leaf_wetness_2' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Leaf wetness percent outside the crop canopy.',
+      ),
+      'precipitation' => array(
+        'type' => 'float(3,2)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Accumulated precipitation in millimeters. Resolution is usually 0.25 mm.',
+      ),
+      'wind_direction' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The direction from which the wind blows. Represented as degrees on compass rose, from 0 (North) to 359.',
+      ),
+      'wind_speed' => array(
+        'type' => 'float(2,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Wind speed in meters per second.',
+      ),
+      'solar_radiation' => array(
+        'type' => 'float(3,1)',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Shortwave radiation received fromthe Sun measured in power per unit area (W/m2).',
+      ),
+    ),
+    'primary key' => array('wid'),
+  );
+
+  return $schema;
+}
