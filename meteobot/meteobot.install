@@ -34,7 +34,6 @@ function meteobot_schema() {
       ),
       'air_temperature' => array(
         'type' => 'numeric',
-        'unsigned' => TRUE,
         'precision' => 3,
         'scale' => 1,
         'not null' => TRUE,
@@ -61,7 +60,6 @@ function meteobot_schema() {
       ),
       'dew_point' => array(
         'type' => 'numeric',
-        'unsigned' => TRUE,
         'precision' => 3,
         'scale' => 1,
         'not null' => TRUE,
@@ -97,7 +95,6 @@ function meteobot_schema() {
       ),
       'earth_temperature_1' => array(
         'type' => 'numeric',
-        'unsigned' => TRUE,
         'precision' => 3,
         'scale' => 1,
         'not null' => TRUE,
@@ -106,7 +103,6 @@ function meteobot_schema() {
       ),
       'earth_temperature_2' => array(
         'type' => 'numeric',
-        'unsigned' => TRUE,
         'precision' => 3,
         'scale' => 1,
         'not null' => TRUE,
@@ -115,7 +111,6 @@ function meteobot_schema() {
       ),
       'earth_temperature_3' => array(
         'type' => 'numeric',
-        'unsigned' => TRUE,
         'precision' => 3,
         'scale' => 1,
         'not null' => TRUE,
@@ -177,8 +172,12 @@ function meteobot_schema() {
         'description' => 'Shortwave radiation received fromthe Sun measured in power per unit area (W/m2).',
       ),
     ),
+    'indexes' => array(
+      'station_id' => array(
+        'sid',
+      ),
+    ),
     'primary key' => array('wid'),
   );
-
   return $schema;
 }

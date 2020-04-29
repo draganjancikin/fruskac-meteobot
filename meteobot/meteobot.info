@@ -1,4 +1,5 @@
 name = Meteobot
 description = Collect weather data from Meteobot API and show it.
 core = 7.x
+version = 7.69
 package = My Modules
