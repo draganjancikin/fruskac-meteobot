@@ -67,6 +67,19 @@ function meteobot_json_callback() {
   $query->addField('meteobot', 'air_temperature');
   $query->addField('meteobot', 'air_pressure');
   $query->addField('meteobot', 'air_humidity');
+  $query->addField('meteobot', 'dew_point');
+  $query->addField('meteobot', 'earth_humidity_1');
+  $query->addField('meteobot', 'earth_humidity_2');
+  $query->addField('meteobot', 'earth_humidity_3');
+  $query->addField('meteobot', 'earth_temperature_1');
+  $query->addField('meteobot', 'earth_temperature_2');
+  $query->addField('meteobot', 'earth_temperature_3');
+  $query->addField('meteobot', 'leaf_wetness_1');
+  $query->addField('meteobot', 'leaf_wetness_2');
+  $query->addField('meteobot', 'precipitation');
+  $query->addField('meteobot', 'wind_direction');
+  $query->addField('meteobot', 'wind_speed');
+  $query->addField('meteobot', 'solar_radiation');
 
   // Only return records that were created in the last hour
   $query->condition('meteobot.created', strtotime('-1 hour'), '>=');
