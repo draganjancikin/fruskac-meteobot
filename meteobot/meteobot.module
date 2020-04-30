@@ -24,3 +24,55 @@ function meteobot_help($path, $arg) {
       break;
   }
 }
+
+/**
+ * Implements hook_menu()
+ *
+ * Registered API path
+ */
+
+function meteobot_menu() {
+  $items = array();
+
+  // The path that the endpoint will be registered to
+  $items['meteo/ajax/meteobot.json'] = array(
+
+    // The name of the function called when the path is accessed
+    'page callback' => 'meteobot_json_callback',
+
+    // Set this value to TRUE to allow access to any user
+    'access callback' => TRUE,
+
+    // Declare this as a simple registered path
+    'type' => MENU_CALLBACK,
+  );
+
+  // Return the $items array to register the path
+  return $items;
+}
+
+/**
+ * Function that return JSON data from "meteobot" table
+ */
+
+function meteobot_json_callback() {
+
+  // Create a SelectQuery object using the 'meteobot' db table
+  $query = db_select('meteobot');
+
+  // Add the fields to query
+  $query->addField('meteobot', 'wid');
+  $query->addField('meteobot', 'sid');
+  $query->addField('meteobot', 'created');
+  $query->addField('meteobot', 'air_temperature');
+  $query->addField('meteobot', 'air_pressure');
+  $query->addField('meteobot', 'air_humidity');
+
+  // Only return records that were created in the last hour
+  $query->condition('meteobot.created', strtotime('-1 hour'), '>=');
+
+  // Run the query and get the results as an array of objects
+  $data = $query->execute()->fetchAll();
+
+  return drupal_json_output($data);
+}
