@@ -35,7 +35,8 @@ function meteobot_menu() {
   $items = array();
 
   // The path that the endpoint will be registered to
-  $items['meteo/ajax/meteobot.json'] = array(
+  // $items['meteo/ajax/meteobot.json'] = array(
+    $items['api/meteo'] = array(
 
     // The name of the function called when the path is accessed
     'page callback' => 'meteobot_json_callback',
@@ -55,7 +56,7 @@ function meteobot_menu() {
  * Function that return JSON data from "meteobot" table
  */
 
-function meteobot_json_callback() {
+function meteobot_json_callback($period = '') {
 
   // Create a SelectQuery object using the 'meteobot' db table
   $query = db_select('meteobot');
@@ -81,8 +82,28 @@ function meteobot_json_callback() {
   $query->addField('meteobot', 'wind_speed');
   $query->addField('meteobot', 'solar_radiation');
 
-  // Only return records that were created in the last hour
-  $query->condition('meteobot.created', strtotime('-1 hour'), '>=');
+  // define $start_time for requested time period
+  switch ($period) {
+    case 'hourly':
+      $start_time = '-1 hour';
+    break;
+    case 'daily':
+      $start_time = '-1 day';
+      break;
+    case 'weekly':
+      $start_time = '-7 day';
+      break;
+    case 'monthly':
+      $start_time = '-30 day';
+      break;
+    default:
+      $start_time = 0;
+      break;
+  }
+  $end_time = time();
+
+  // Only return records that were created between $start_time and $end_time
+  $query->condition('meteobot.created', array(strtotime($start_time), $end_time), 'BETWEEN');
 
   // Run the query and get the results as an array of objects
   $data = $query->execute()->fetchAll();
