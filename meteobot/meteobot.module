@@ -3,8 +3,9 @@
  * @file
  * A block module that displays weather data form Meteobot API.
  */
+module_load_include('inc', 'meteobot', 'includes/config.php');
 
- /**
+/**
  * Implements hook_help().
  *
  * Displays help and module information.
@@ -21,7 +22,7 @@ function meteobot_help($path, $arg) {
       $output .= '<h2>' . t('About') . '</h2>';
       $output .= '<p>' . t('Displays weather data from Meteobot API');
       return $output;
-      break;
+    break;
   }
 }
 
@@ -39,6 +40,19 @@ function meteobot_menu() {
 
     // The name of the function called when the path is accessed
     'page callback' => 'meteobot_json_callback',
+
+    // Set this value to TRUE to allow access to any user
+    'access callback' => TRUE,
+
+    // Declare this as a simple registered path
+    'type' => MENU_CALLBACK,
+  );
+
+  // The path for testing meteobot.com API
+  $items['api/export.meteobot.com'] = array(
+
+    // The name of the function called when the path is accessed
+    'page callback' => 'meteobot_com_api',
 
     // Set this value to TRUE to allow access to any user
     'access callback' => TRUE,
@@ -88,24 +102,70 @@ function meteobot_json_callback($period = '') {
     break;
     case 'daily':
       $start_time = '-1 day';
-      break;
+    break;
     case 'weekly':
       $start_time = '-7 day';
-      break;
+    break;
     case 'monthly':
       $start_time = '-30 day';
-      break;
+    break;
     default:
-      $start_time = 0;
-      break;
-  }
-  $end_time = time();
+    $start_time = 0;
+  break;
+}
+$end_time = time();
 
-  // Only return records that were created between $start_time and $end_time
-  $query->condition('meteobot.created', array(strtotime($start_time), $end_time), 'BETWEEN');
+// Only return records that were created between $start_time and $end_time
+$query->condition('meteobot.created', array(strtotime($start_time), $end_time), 'BETWEEN');
 
-  // Run the query and get the results as an array of objects
-  $data = $query->execute()->fetchAll();
+// Run the query and get the results as an array of objects
+$data = $query->execute()->fetchAll();
 
-  return drupal_json_output($data);
+return drupal_json_output($data);
+}
+
+/**
+ * Function that return JSON data from export.meteobot.com API
+ */
+
+function meteobot_com_api(){
+
+  // api authentification array
+  $api_auth = get_api_auth();
+
+  // api authentification variables
+  $id = $api_auth['sid'];
+  $username = $api_auth['username'];
+  $password = $api_auth['password'];
+  $api_url = $api_auth['api_url'];
+
+  // time period
+  $e_time = date('Y-m-d H:i', time());
+  $s_time = date('Y-m-d H:i', strtotime('-10 min'));
+
+  $data = array(
+    'id' => $id,
+    'startTime' => $s_time,
+    'endTime' => $e_time,
+  );
+
+  $options = array(
+    'method' => 'GET',
+    'data' => $data,
+    'headers' => array('Content-Type' => 'application/json'),
+  );
+
+  $url = 'https://'.$username.':'.$password.'@'.variable_get('api_url', $api_url);
+
+  $full_url = url($url, array('query' => $data));
+
+  $response = drupal_http_request($full_url, $options);
+
+  /* TODO: ------------------------------------------------------------
+  $response->data to JSON
+  add to database
+  cronjob every 10min
+  */
+  echo gettype($response->data);
+  var_dump($response->data);
 }
