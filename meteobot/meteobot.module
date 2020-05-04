@@ -3,7 +3,6 @@
  * @file
  * A block module that displays weather data form Meteobot API.
  */
-module_load_include('inc', 'meteobot', 'includes/config.php');
 
 /**
  * Implements hook_help().
@@ -29,35 +28,27 @@ function meteobot_help($path, $arg) {
 /**
  * Implements hook_menu()
  *
- * Registered API path
+ * Registered paths
  */
 
 function meteobot_menu() {
   $items = array();
 
-  // The path that the endpoint will be registered to
+  // The path that list wether data from db table "meteobot"
   $items['api/meteo'] = array(
 
     // The name of the function called when the path is accessed
     'page callback' => 'meteobot_json_callback',
-
     // Set this value to TRUE to allow access to any user
     'access callback' => TRUE,
-
     // Declare this as a simple registered path
     'type' => MENU_CALLBACK,
   );
 
   // The path for testing meteobot.com API
   $items['api/export.meteobot.com'] = array(
-
-    // The name of the function called when the path is accessed
     'page callback' => 'meteobot_com_api',
-
-    // Set this value to TRUE to allow access to any user
     'access callback' => TRUE,
-
-    // Declare this as a simple registered path
     'type' => MENU_CALLBACK,
   );
 
@@ -66,7 +57,7 @@ function meteobot_menu() {
 }
 
 /**
- * Function that return JSON data from "meteobot" table
+ * Function that return JSON data from "meteobot" db table
  */
 
 function meteobot_json_callback($period = '') {
@@ -99,29 +90,31 @@ function meteobot_json_callback($period = '') {
   switch ($period) {
     case 'hourly':
       $start_time = '-1 hour';
-    break;
+      break;
     case 'daily':
       $start_time = '-1 day';
-    break;
+      break;
     case 'weekly':
       $start_time = '-7 day';
-    break;
+      break;
     case 'monthly':
       $start_time = '-30 day';
-    break;
+      break;
     default:
-    $start_time = 0;
-  break;
-}
-$end_time = time();
+      $start_time = 0;
+      break;
+  }
 
-// Only return records that were created between $start_time and $end_time
-$query->condition('meteobot.created', array(strtotime($start_time), $end_time), 'BETWEEN');
+  // define $end_time for requested time period
+  $end_time = time();
 
-// Run the query and get the results as an array of objects
-$data = $query->execute()->fetchAll();
+  // Only return records that were created between $start_time and $end_time
+  $query->condition('meteobot.created', array(strtotime($start_time), $end_time), 'BETWEEN');
 
-return drupal_json_output($data);
+  // Run the query and get the results as an array of objects
+  $data = $query->execute()->fetchAll();
+
+  return drupal_json_output($data);
 }
 
 /**
@@ -129,6 +122,8 @@ return drupal_json_output($data);
  */
 
 function meteobot_com_api(){
+
+  module_load_include('inc', 'meteobot', 'includes/config.php');
 
   // api authentification array
   $api_auth = get_api_auth();
@@ -139,10 +134,11 @@ function meteobot_com_api(){
   $password = $api_auth['password'];
   $api_url = $api_auth['api_url'];
 
-  // time period
-  $e_time = date('Y-m-d H:i', time());
+  // start and end times of the time period
   $s_time = date('Y-m-d H:i', strtotime('-10 min'));
+  $e_time = date('Y-m-d H:i', time());
 
+  // query array
   $data = array(
     'id' => $id,
     'startTime' => $s_time,
@@ -155,17 +151,62 @@ function meteobot_com_api(){
     'headers' => array('Content-Type' => 'application/json'),
   );
 
-  $url = 'https://'.$username.':'.$password.'@'.variable_get('api_url', $api_url);
-
+  $url = 'https://'.$username.':'.$password.'@'.$api_url;
   $full_url = url($url, array('query' => $data));
 
   $response = drupal_http_request($full_url, $options);
 
-  /* TODO: ------------------------------------------------------------
-  $response->data to JSON
-  add to database
-  cronjob every 10min
-  */
-  echo gettype($response->data);
-  var_dump($response->data);
+  // $response->data JSON string to array
+  $lines = explode("\n", $response->data);
+  $keys = explode(';', $lines[0]);
+  $vals = explode(';', $lines[1]);
+  $result = array_combine($keys, $vals);
+
+  // check if time of new weather data not equal to time of last record in table "meteobot"
+  $time_of_last_record = time_of_last_record();
+  $created = strtotime($result['date'] . ' ' . $result['time']);
+
+  if($created != $time_of_last_record) {
+    // if not equal insert data to table "meteobot"
+    $inserted = db_insert('meteobot')
+      ->fields(array(
+        'sid' => $result['id'],
+        'created' => $created,
+        'air_temperature' => $result['airTemperature'],
+        'air_pressure' => $result['airPressure'],
+        'air_humidity' => $result['airHumidity'],
+        'dew_point' => $result['dewPoint'],
+        'earth_humidity_1' => $result['earthHumidity1'],
+        'earth_humidity_2' => $result['earthHumidity2'],
+        'earth_humidity_3' => $result['earthHumidity3'] = 0,
+        'earth_temperature_1' => $result['earthTemperature1'],
+        'earth_temperature_2' => $result['earthTemperature2'] = 0,
+        'earth_temperature_3' => $result['earthTemperature3'] = 0,
+        'leaf_wetness_1' => $result['leafWetness1'],
+        'leaf_wetness_1' => $result['leafWetness2'] = 0,
+        'precipitation' => $result['precipitation'],
+        'wind_direction' => $result['windDirection'],
+        'wind_speed' => $result['windSpeed'],
+        'solar_radiation' => $result['solarRadiation']
+      ))
+      ->execute();
+      echo 'New wid on the table "meteobot": '.$inserted;
+  } else {
+    echo 'New time: '.$created . ', old time: ' . $time_of_last_record;
+  }
+
+}
+
+/**
+ * Function back time of last record
+ */
+
+function time_of_last_record () {
+  $query = db_select('meteobot', 'm');
+  $query->addField('m', 'wid');
+  $query->addField('m', 'created');
+  $query->orderBy('wid', 'DESC');
+  $query->range(0, 1);
+  $result = $query->execute()->fetchAll();
+  return $result[0]->created;
 }
