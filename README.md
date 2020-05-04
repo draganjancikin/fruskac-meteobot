@@ -2,6 +2,14 @@
 
 Meteobot modul for Drupal 7
 
+## Instalation
+
+* copy/export modul folder "meteobot" to [sitename]/sites/all/modules/
+* in admin/modules, tab "list" find "meteobot", enabled it, and save configuration
+* when modul enabled first time:
+  * new table "meteobot" automatically added to database
+  * ...
+
 ## API
 
 ### Get weather data from site database
