@@ -52,7 +52,7 @@ function meteobot_schema() {
       'air_humidity' => array(
         'type' => 'numeric',
         'unsigned' => TRUE,
-        'precision' => 3,
+        'precision' => 4,
         'scale' => 1,
         'not null' => TRUE,
         'default' => 0,
