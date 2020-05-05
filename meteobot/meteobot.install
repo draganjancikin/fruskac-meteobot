@@ -8,7 +8,6 @@
 /**
  * Implements hook_schema().
  */
-
 function meteobot_schema() {
   $schema['meteobot'] = array(
     'description' => 'Stores weather data from Meteobot weather stations.',

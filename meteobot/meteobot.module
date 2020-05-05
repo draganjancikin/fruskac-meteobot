@@ -30,8 +30,8 @@ function meteobot_help($path, $arg) {
  *
  * Registered paths
  */
-
 function meteobot_menu() {
+
   $items = array();
 
   // The path that list wether data from db table "meteobot"
@@ -59,7 +59,6 @@ function meteobot_menu() {
 /**
  * Function that return JSON data from "meteobot" db table
  */
-
 function meteobot_json_callback($period = '') {
 
   // Create a SelectQuery object using the 'meteobot' db table
@@ -120,7 +119,6 @@ function meteobot_json_callback($period = '') {
 /**
  * Function that return JSON data from export.meteobot.com API
  */
-
 function meteobot_com_api(){
 
   module_load_include('inc', 'meteobot', 'includes/config.php');
@@ -200,7 +198,6 @@ function meteobot_com_api(){
 /**
  * Function back time of last record
  */
-
 function time_of_last_record () {
   $query = db_select('meteobot', 'm');
   $query->addField('m', 'wid');
@@ -209,4 +206,49 @@ function time_of_last_record () {
   $query->range(0, 1);
   $result = $query->execute()->fetchAll();
   return $result[0]->created;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function meteobot_block_info() {
+  $blocks['meteobot'] = array(
+    // The name that will appear in the block list.
+    'info' => t('Meteobot'),
+    // Default setting.
+    'cache' => DRUPAL_CACHE_PER_ROLE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * Prepares the contents of the block.
+ */
+function meteobot_block_view($delta = '') {
+
+  $block = array();
+
+  switch ($delta) {
+    case 'meteobot':
+      $block['subject'] = t('Meteobot');
+      // $block['content'] = t('Bidnit će weather data ...');
+      $block['content'] = array(
+        '#attached' => array(
+          'css' => array(
+            drupal_get_path('module', 'meteobot') . '/css/meteobot.css',
+          ),
+          'js' => array(
+            'https://www.gstatic.com/charts/loader.js',
+            drupal_get_path('module', 'meteobot') . '/js/meteobot.js',
+          ),
+        ),
+        '#markup' => 'Block Content',
+      );
+      break;
+    }
+    return $block;
+
 }
