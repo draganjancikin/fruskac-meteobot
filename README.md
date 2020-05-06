@@ -7,8 +7,8 @@ Meteobot modul for Drupal 7
 * copy/export modul folder "meteobot" to [sitename]/sites/all/modules/
 * in admin/modules, tab "list" find "meteobot", enabled it, and save configuration
 * when modul enabled first time:
-  * new table "meteobot" automatically added to database
-  * ...
+  * new db table "meteobot" added to database
+  * pull last 7 days data from meteobot.com API, and save to db table "meteobot"
 
 ## API
 
