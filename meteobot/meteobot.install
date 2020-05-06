@@ -187,35 +187,23 @@ function meteobot_schema() {
 function meteobot_install(){
 
   module_load_include('inc', 'meteobot', 'includes/config.php');
-  module_load_include('inc', 'meteobot', 'includes/functions.php');
 
   // get api authentification array
   $api_auth = getApiAuth();
 
-  // grab last 10 day from meteobot.com API '-10 day', '0 hour'
-  $api_data = getApiData($api_auth, '-7 day', '0 hour');
+  // grab last 7 day weather data from meteobot.com API '-7 day', '0 hour'
+  $api_data = getApiData($api_auth, '-2 day', '0 hour');
 
-  // var_dump($api_data[0]);
+  module_load_include('inc', 'meteobot', 'includes/functions.php');
+
   for ($i=0; $i < count($api_data); $i++) {
 
     $weather_data = $api_data[$i];
     $created = strtotime($weather_data['date'] . ' ' . $weather_data['time']);
 
-    // check if in db tabme "meteobot" exist record with created
-
-    // Create a SelectQuery object using the 'meteobot' db table
-    $query = db_select('meteobot');
-
-    // Add the fields to query
-    $query->addField('meteobot', 'created');
-
-    // Only return records that were created between $start_time and $end_time
-    $query->condition('meteobot.created', $created, '=');
-
-    $lkj = $query->execute()->fetchAll();
-
-    if(!$lkj){
-      // save to database ======================================
+    // check if in db table "meteobot" exist record where field "created" = $created
+    if(isNoExist('meteobot', 'created', $created)){
+      // save to dd
       $inserted = db_insert('meteobot')
       ->fields(array(
         'sid' => $weather_data['id'],
@@ -238,9 +226,9 @@ function meteobot_install(){
         'solar_radiation' => $weather_data['solarRadiation']
       ))
       ->execute();
-      echo 'New wid on the table "meteobot": '.$inserted;
+
     } else {
-      echo "ima, ne upisuj !!!!";
+      // do nothing
     }
 
 

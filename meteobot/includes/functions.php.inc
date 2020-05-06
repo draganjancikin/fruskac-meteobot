@@ -71,3 +71,29 @@ function getApiData($api_auth, $start_time, $end_time){
 
   return $neki_niz;
 }
+
+/**
+ * Function that check is in "db_table" no exist "field" with "value"
+ *
+ * @param db_table
+ *  Database table
+ * @param field
+ *  Field in database
+ * @param value
+ *  Value that compare with field value
+ */
+function isNoExist($db_table, $field, $value){
+
+  // Create a SelectQuery object using the 'meteobot' db table
+  $query = db_select($db_table);
+
+  // Add the fields to query
+  $query->addField($db_table, $field);
+
+  // Only return records that were created between $start_time and $end_time
+  $query->condition($db_table.'.'.$field, $value, '=');
+
+  $lkj = $query->execute()->fetchAll();
+
+  return empty($lkj);
+}
