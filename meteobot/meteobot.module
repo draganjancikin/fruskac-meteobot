@@ -162,7 +162,7 @@ function meteobot_com_api(){
   $result = array_combine($keys, $vals);
 
   // check if time of new weather data not equal to time of last record in table "meteobot"
-  $time_of_last_record = time_of_last_record();
+  $time_of_last_record = timeOfLastRecord();
   $created = strtotime($result['date'] . ' ' . $result['time']);
 
   if($created != $time_of_last_record) {

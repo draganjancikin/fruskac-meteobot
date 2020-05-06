@@ -3,7 +3,7 @@
 /**
  * Function back time of last record
  */
-function time_of_last_record () {
+function timeOfLastRecord () {
   $query = db_select('meteobot', 'm');
   $query->addField('m', 'wid');
   $query->addField('m', 'created');
@@ -93,7 +93,7 @@ function isNoExist($db_table, $field, $value){
   // Only return records that were created between $start_time and $end_time
   $query->condition($db_table.'.'.$field, $value, '=');
 
-  $result` = $query->execute()->fetchAll();
+  $result = $query->execute()->fetchAll();
 
   return empty($result);
 }
