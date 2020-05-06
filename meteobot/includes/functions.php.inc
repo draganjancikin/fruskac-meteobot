@@ -93,7 +93,7 @@ function isNoExist($db_table, $field, $value){
   // Only return records that were created between $start_time and $end_time
   $query->condition($db_table.'.'.$field, $value, '=');
 
-  $lkj = $query->execute()->fetchAll();
+  $result` = $query->execute()->fetchAll();
 
-  return empty($lkj);
+  return empty($result);
 }
