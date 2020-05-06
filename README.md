@@ -9,6 +9,8 @@ Meteobot modul for Drupal 7
 * when modul enabled first time:
   * new db table "meteobot" added to database
   * pull last 7 days data from meteobot.com API, and save to db table "meteobot"
+* in admin/structure/block on bottom in "Disabled" find "Meteobot", choose region "Content" and "Save block"
+* in admin/structure/block, find "Meteobot", in configure/Visibility settings, tab Pages, check "Only the listed pages", write "meteo", and "Save block"
 
 ## API
 
