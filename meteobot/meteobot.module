@@ -31,7 +31,6 @@ function meteobot_help($path, $arg) {
  * Registered paths
  */
 function meteobot_menu() {
-
   $items = array();
 
   // The path that list wether data from db table "meteobot"
