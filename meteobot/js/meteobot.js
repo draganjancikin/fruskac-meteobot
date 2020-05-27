@@ -69,6 +69,7 @@ switch (data_type) {
 
   // Set chart options
   var options = {
+    legend: 'none',
     height: 200,
     /*'title': 'Erdevik, Serbia',*/
     hAxis: {
@@ -79,7 +80,8 @@ switch (data_type) {
       minValue: parametars.vAxisMinValue,
       maxValue: parametars.vAxisMaxValue,
     },
-    colors: [parametars.color]
+    colors: [parametars.color],
+    chartArea: {width: '85%'}
   };
 
   // Instantiate and draw our chart, passing in some options.
