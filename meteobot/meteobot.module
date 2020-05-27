@@ -221,8 +221,7 @@ function meteobot_block_view($delta = '') {
 
   switch ($delta) {
     case 'meteobot':
-      $block['subject'] = t('Meteobot');
-      // $block['content'] = t('Bidnit će weather data ...');
+      $block['subject'] = t('Block Subject ');
       $block['content'] = array(
         '#attached' => array(
           'css' => array(
